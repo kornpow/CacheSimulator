@@ -91,13 +91,14 @@ int readConfig(char *cache, char *mem) {
 
     int mnum = 0;
     for(int i = 0; i < 6; i++) {
-    	fgets(mbuf[i],20,cc);
+    	fgets(mbuf[i],20,mc);
     	int w = 0;
     	while(mbuf[i][w] != 0) {
     		printf("%c",mbuf[i][w]);
     		w++;
     	}
     	const char * mstr = strstr(mbuf[i],":");
+
     	if(mstr) {
     		printf("\n");
     		int w = 0;
