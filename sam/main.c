@@ -8,6 +8,7 @@ unsigned int mconfig[4];
 
 void usage();
 int readConfig(char *cc, char *mc);
+int computeCost(unsigned int * cache,unsigned int * memory);
 
 
 int main(int argc, char ** argv) {
@@ -24,6 +25,8 @@ int main(int argc, char ** argv) {
 		mconfig[i] = 0;
 
 	readConfig(argv[1],argv[2]);
+
+    computeCost(cconfig,mconfig);
 
 	
 
@@ -83,7 +86,7 @@ int readConfig(char *cache, char *mem) {
     	}
     }
     printf("\n\n\n");
-    printf("Here is the passed in parameter values:\n");
+    printf("Here is the passed in cache parameter values:\n");
     for(int q = 0; q < 12; q++) {
     	printf("%d: %d\n", q, cconfig[q]);
     }
@@ -93,23 +96,23 @@ int readConfig(char *cache, char *mem) {
     for(int i = 0; i < 6; i++) {
     	fgets(mbuf[i],20,mc);
     	int w = 0;
-    	while(mbuf[i][w] != 0) {
-    		printf("%c",mbuf[i][w]);
-    		w++;
-    	}
+    	// while(mbuf[i][w] != 0) {
+    	// 	printf("%c",mbuf[i][w]);
+    	// 	w++;
+    	// }
     	const char * mstr = strstr(mbuf[i],":");
 
     	if(mstr) {
     		printf("\n");
     		int w = 0;
     		int result = atoi(mstr+1);
-    		printf("The integer result is: %d.\n",result);
+    		// printf("The integer result is: %d.\n",result);
     		mconfig[mnum] = result;
     		mnum++;
     	}
     }
     printf("\n\n\n");
-    printf("Here is the passed in parameter values:\n");
+    printf("Here is the passed in memory parameter values:\n");
     for(int q = 0; q < 4; q++) {
     	printf("%d: %d\n", q, mconfig[q]);
     }
@@ -118,5 +121,62 @@ int readConfig(char *cache, char *mem) {
 	fclose(mc);
 
 	return 0;
+
+}
+
+int computeCost(unsigned int cache[],unsigned int * memory) {
+    int cost = 0;
+    int l1assoc = 0;
+    int l1size = 0;
+    int l1mult = 1;
+    int l2assoc = 0;
+    int l2size = 0;
+    int l2mult = 1;
+    int mem_ready = 0;
+    int mem_chunksize = 0;
+
+    l1size = (cache[1]/1024)/4; //Number of sets of 4KB
+    l1assoc = cache[2];
+    printf("L1 Cache Size(Multiples of 4KB): %d\n",l1size);
+    printf("L1 Cache Associativity: %d\n",l1assoc);
+
+    l2size = (cache[6]/1024)/16; //Number of set of 16KB
+    l2assoc = cache[7];
+    printf("L2 Cache Size(Multiples of 16KB): %d\n",l2size);
+    printf("L2 Cache Associativity: %d\n",l2assoc);
+
+    mem_ready = 50/ memory[1];
+    printf("Memory Latency Increased by factor of %d.\n",mem_ready);
+
+    mem_chunksize = memory[3] / 8;
+    printf("Memory Chunksize multiples of 8 Bytes: %d.\n",mem_chunksize);
+
+    //Full cost calculation.
+
+    cost = 100*l1size;
+    while(l1assoc > 1) {
+        l1assoc >>= 1;
+        l1mult++;
+    }
+    printf("The Associativity multiplier for L1 is: %d.\n",l1mult);
+
+    while(l2assoc > 1) {
+        l2assoc >>= 1;
+        l2mult++;
+    }
+    printf("The Associativity multiplier for L2 is: %d.\n",l2mult);
+
+    cost = (100*l1size) + ((l1mult-1)*l1size*100);
+    cost += (50*l2size) + ((l2mult-1)*l2size*50);
+
+    printf("Cost for just L1 and L2 size and Associativity: %d\n",cost);
+
+    cost += (50*mem_ready);
+    cost += (25*mem_chunksize);
+
+    printf("Total Cost of Memory System: %d.\n",cost);
+
+
+    return cost;
 
 }
