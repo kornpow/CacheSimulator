@@ -1,14 +1,17 @@
 #include <stdio.h>
 #include "fifo.h"
 
+
+
 void init_fifo(fifo *q) {
 	q->count = 0;
 	q->head = 0;
 	q->tail = 0;
+	// q->q = malloc(sizeof(ref)*BUFFSIZE);
 }
 
 int enqueue(fifo *q, ref *data) {
-	if(q->count >= BUFFSIZE) {
+	if(q->count >= 1000) {
 		printf("Buffer is full!!!\n");
 		return 0;
 	}
@@ -29,4 +32,8 @@ int empty(fifo *q)
 {
         if (q->count <= 0) return (1);
         else return (0);
+}
+
+int size(fifo *q) {
+	return q->count;
 }

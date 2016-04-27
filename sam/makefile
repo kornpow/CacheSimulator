@@ -1,10 +1,14 @@
 CC=gcc
 CFLAGS=-I. -lpthread
-DEPS = fifo.h
-OBJ = fifo.o trace.o 
+DEPS = 
+OBJ1 = trace.o
+OBJ2 = main.o
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-trace: $(OBJ)
+trace: $(OBJ1)
+	gcc -o $@ $^ $(CFLAGS)
+
+main: $(OBJ2)
 	gcc -o $@ $^ $(CFLAGS)
