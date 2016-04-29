@@ -6,12 +6,17 @@
 
 #define BSIZE 100
 
-unsigned int cconfig[12];
+unsigned int cconfig[17];
 unsigned int mconfig[4];
 
 char op;
 unsigned long long int address;
 unsigned int bytesize;
+
+
+int l1blocks = 0;
+int l2blocks = 0;
+int addrbits = 0;
 
 // ***** Structure Declaration *****
 
@@ -20,6 +25,7 @@ typedef struct c_entry{
     uint8_t valid;
     uint8_t tag;
     long long int data;
+    uint8_t dirty;
 } c_entry;
 
 typedef struct {
@@ -42,11 +48,13 @@ int setupL1();
 int setupL2();
 ref bundleRef(char op, unsigned long long int address, unsigned int bytesize);
 int fillBuffer();
+int processBuffer(int size);
+int printout(char * outstring);
 
 
 int main(int argc, char ** argv) {
 	printf("Number of parameters: %d\n",argc);
-	if(argc != 3)
+	if(argc != 2)
 	{
 		usage();
 		return -1;
@@ -59,28 +67,86 @@ int main(int argc, char ** argv) {
 
 	readConfig(argv[1],argv[2]);
 
-    computeCost(cconfig,mconfig);
+    // computeCost(cconfig,mconfig);
 
-    setupL1();
+    // setupL1();
 
-    int count = fillBuffer();
+    // int count = fillBuffer();
+    // int processed = processBuffer(count);
 
-    printf("Read in %d elements from the stream.\n",count);
+    // printf("Read in %d elements from the stream.\n",count);
 
-    for(int i = 0; i < count; i++) {
-        printf("Data!:\n");
-        printf("Op: %c, address: %Lx, bytesize: %d\n",inbuffer[i].op, inbuffer[i].address, inbuffer[i].bytesize);
-    }
-
-    printf("main waiting for input buffer thread to terminate...\n");
-
-    // for(int k = 0; k<100;k++) {
-    //     printf("Should be zero: %d.\n", l1cache[k].valid);
+    // for(int i = 0; i < count; i++) {
+    //     printf("Data!:\n");
+    //     printf("Op: %c, address: %Lx, bytesize: %d\n",inbuffer[i].op, inbuffer[i].address, inbuffer[i].bytesize);
     // }
 
-	
 
+
+    // int chars = writeOutputFile("testing 123");
+
+
+    // printf("FINISHED...\n");
 	return 0;
+}
+
+int printout(char * outstring) {
+    FILE *out = fopen("printout.txt","a+");
+    int chars = fprintf(out, "%s\n", outstring);
+    fclose(out);   
+
+    return chars;
+ }
+
+int processBuffer(int size) {
+    int processed = 0;
+    int item;
+    int read = 0;
+    int write = 0;
+    int inst = 0;
+
+    int blockaddr = 0;
+    int tag = 0;
+
+    int blockmask = 0;
+
+    for(int i = 0; i < addrbits; i++) {
+        blockmask <<= 1;
+        blockmask++;
+    }
+
+    printf("The blockmask! %#15x",blockmask);
+
+
+
+    //Count the number of instructions of each type
+    for(int i = 0; i < size; i++) {
+        blockaddr = (inbuffer[i].address & blockmask) % l1blocks;
+        tag = (inbuffer[i].address & (!blockmask) );  
+
+        if(inbuffer[item].op == 'R')
+        {
+            printf("Read Memory!\n");
+            read++;
+        }
+        if(inbuffer[item].op == 'W')
+        {
+            printf("Write Memory!\n");
+            write++;
+        }
+        if(inbuffer[item].op == 'I')
+        {
+            printf("Read Instruction!\n");
+            inst++;
+        }
+        printf("Block address for trace %d is: %#15x.\n",i,blockaddr);
+        printf("Tag for trace %d is: %#15x.\n",i,tag);
+
+
+    }
+    printf("Reads: %d, Writes: %d, Instructions: %d.\n",read,write,inst);
+
+    return processed;
 }
 
 int fillBuffer() {
@@ -103,7 +169,7 @@ ref bundleRef(char op, unsigned long long int address, unsigned int bytesize) {
 
 
 void usage() {
-	printf("Usage: <progname> <cache_config> <memory_config>\n");
+	printf("Usage: zcat <trace> | <progname> <cache_config>\n");
 }
 
 int readConfig(char *cache, char *mem) {
@@ -113,32 +179,21 @@ int readConfig(char *cache, char *mem) {
 		printf( "Could not open cache file\n" );
 		return -1;
 	}
-	FILE *mc = fopen(mem,"r");
-	if ( mc == 0 )
-	{
-		printf( "Could not open memory file\n" );
-		return -1;
-	}
+
 	int x;
-	char cbuf[15][20];
-	char mbuf[5][20];
-	char buf[20] = {0};
+	char cbuf[25][21];
+	char buf[21] = {0};
 
 	//Get L1
-	fgets(buf,20,cc);
-	for(int j = 0; j <20; j++) {
-		printf("%c",buf[j]);
-	}
-
-            /* read one character at a time from file, stopping at EOF, which
-               indicates the end of the file.  Note that the idiom of "assign
-               to a variable, check the value" used below works because
-               the assignment statement evaluates to the value assigned. */
+	// fgets(buf,20,cc);
+	// for(int j = 0; j <20; j++) {
+	// 	printf("%c",buf[j]);
+	// }
 
 
     int cnum = 0;
-    for(int i = 0; i < 16; i++) {
-    	fgets(cbuf[i],20,cc);
+    for(int i = 0; i < 25; i++) {
+    	fgets(cbuf[i],21,cc);
     	int w = 0;
     	while(cbuf[i][w] != 0) {
     		printf("%c",cbuf[i][w]);
@@ -148,6 +203,12 @@ int readConfig(char *cache, char *mem) {
     	if(cstr) {
     		printf("\n");
     		int w = 0;
+            if(i == 24) {
+                printf("Trace Name: %s",cstr+1);
+                printout("-----------------------------");
+                printout(cstr+1);
+                printout("-----------------------------");
+            }
     		int result = atoi(cstr+1);
     		printf("The integer result is: %d.\n",result);
     		cconfig[cnum] = result;
@@ -156,38 +217,11 @@ int readConfig(char *cache, char *mem) {
     }
     printf("\n\n\n");
     printf("Here is the passed in cache parameter values:\n");
-    for(int q = 0; q < 12; q++) {
+    for(int q = 0; q < 16; q++) {
     	printf("%d: %d\n", q, cconfig[q]);
-    }
+    }   
 
-
-    int mnum = 0;
-    for(int i = 0; i < 6; i++) {
-    	fgets(mbuf[i],20,mc);
-    	int w = 0;
-    	// while(mbuf[i][w] != 0) {
-    	// 	printf("%c",mbuf[i][w]);
-    	// 	w++;
-    	// }
-    	const char * mstr = strstr(mbuf[i],":");
-
-    	if(mstr) {
-    		printf("\n");
-    		int w = 0;
-    		int result = atoi(mstr+1);
-    		// printf("The integer result is: %d.\n",result);
-    		mconfig[mnum] = result;
-    		mnum++;
-    	}
-    }
-    printf("\n\n\n");
-    printf("Here is the passed in memory parameter values:\n");
-    for(int q = 0; q < 4; q++) {
-    	printf("%d: %d\n", q, mconfig[q]);
-    }
-               
 	fclose(cc);
-	fclose(mc);
 
 	return 0;
 
@@ -250,11 +284,20 @@ int computeCost(unsigned int cache[],unsigned int * memory) {
 }
 
 int setupL1() {
-    int l1blocks = cconfig[1]/cconfig[0]; //cache size / block size
+    l1blocks = cconfig[1]/cconfig[0]; //cache size / block size
     int l1assoc = cconfig[2];
     l1blocks /= l1assoc; //l1blocks = l1block/associativity
     l1cache = malloc(sizeof(c_entry)*l1blocks*l1assoc);
     if(l1cache) printf("Successfully allocated memory!\n");
+
+    int bits = 0;
+    while((cconfig[1] >> bits) != 1) bits++; //Determine the number of bits to use for block address
+    addrbits = bits;
+
+
+    printf("The number of bits needed for the block address is: %d.\n",bits);
+
+
 
     for(int j = 0; j < (l1blocks*l1assoc); j++) {
         // l1cache[j] = (c_entry) malloc(sizeof(c_entry));
@@ -262,16 +305,7 @@ int setupL1() {
         l1cache[j].valid = 0;
         l1cache[j].tag = 0;
         l1cache[j].data = 0;
+        l1cache[j].dirty = 0;
     }
     return 0;
 }
-
-    // for(int set = 0; set < l1assoc; set++) {
-    //     for(int block = 0; block < l1blocks; block++) {
-    //         int offset = block*(set+1);
-    //         l1assoc[offset].index = 0;
-    //         l1assoc[offset].valid = 0;
-    //         l1assoc[offset].tag = 0;
-    //         l1assoc[offset].data = 0;
-    //     }
-    // }
