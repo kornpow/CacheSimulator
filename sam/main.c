@@ -18,6 +18,8 @@ int l1blocks = 0;
 int l2blocks = 0;
 int addrbits = 0;
 
+char printbuffer[50];
+
 // ***** Structure Declaration *****
 
 typedef struct c_entry{
@@ -49,7 +51,7 @@ int setupL2();
 ref bundleRef(char op, unsigned long long int address, unsigned int bytesize);
 int fillBuffer();
 int processBuffer(int size);
-int printout(char * outstring);
+int printout(const char * outstring);
 
 
 int main(int argc, char ** argv) {
@@ -67,19 +69,19 @@ int main(int argc, char ** argv) {
 
 	readConfig(argv[1],argv[2]);
 
-    // computeCost(cconfig,mconfig);
+    computeCost(cconfig,mconfig);
 
-    // setupL1();
+    setupL1();
 
-    // int count = fillBuffer();
-    // int processed = processBuffer(count);
+    int count = fillBuffer();
+    int processed = processBuffer(count);
 
-    // printf("Read in %d elements from the stream.\n",count);
+    printf("Read in %d elements from the stream.\n",count);
 
-    // for(int i = 0; i < count; i++) {
-    //     printf("Data!:\n");
-    //     printf("Op: %c, address: %Lx, bytesize: %d\n",inbuffer[i].op, inbuffer[i].address, inbuffer[i].bytesize);
-    // }
+    for(int i = 0; i < count; i++) {
+        printf("Data!:\n");
+        printf("Op: %c, address: %Lx, bytesize: %d\n",inbuffer[i].op, inbuffer[i].address, inbuffer[i].bytesize);
+    }
 
 
 
@@ -90,9 +92,9 @@ int main(int argc, char ** argv) {
 	return 0;
 }
 
-int printout(char * outstring) {
+int printout(const char * outstring) {
     FILE *out = fopen("printout.txt","a+");
-    int chars = fprintf(out, "%s\n", outstring);
+    int chars = fprintf(out, "%s\n",outstring);
     fclose(out);   
 
     return chars;
@@ -124,17 +126,17 @@ int processBuffer(int size) {
         blockaddr = (inbuffer[i].address & blockmask) % l1blocks;
         tag = (inbuffer[i].address & (!blockmask) );  
 
-        if(inbuffer[item].op == 'R')
+        if(inbuffer[i].op == 'R')
         {
             printf("Read Memory!\n");
             read++;
         }
-        if(inbuffer[item].op == 'W')
+        if(inbuffer[i].op == 'W')
         {
             printf("Write Memory!\n");
             write++;
         }
-        if(inbuffer[item].op == 'I')
+        if(inbuffer[i].op == 'I')
         {
             printf("Read Instruction!\n");
             inst++;
@@ -144,7 +146,21 @@ int processBuffer(int size) {
 
 
     }
+    int total = read + write + inst;
     printf("Reads: %d, Writes: %d, Instructions: %d.\n",read,write,inst);
+    printout("-----------------------------");
+    printout("Instruction Statistics");
+    printout("-----------------------------");
+    printout("Number of Reference Types: [Percentage]");
+    sprintf(printbuffer,"Writes:          %d  [%.3f]",write,(float)write/total);
+    printout(printbuffer);
+    sprintf(printbuffer,"Reads:           %d  [%.3f]",read,(float)read/total);
+    printout(printbuffer);
+    sprintf(printbuffer,"Instructions:    %d  [%.3f]",inst,(float)inst/total);
+    printout(printbuffer);
+    printout("-----------------------------");
+    sprintf(printbuffer,"Total:           %d ",total);
+    printout(printbuffer);
 
     return processed;
 }
@@ -203,7 +219,7 @@ int readConfig(char *cache, char *mem) {
     	if(cstr) {
     		printf("\n");
     		int w = 0;
-            if(i == 24) {
+            if(i == 22) {
                 printf("Trace Name: %s",cstr+1);
                 printout("-----------------------------");
                 printout(cstr+1);
@@ -220,6 +236,19 @@ int readConfig(char *cache, char *mem) {
     for(int q = 0; q < 16; q++) {
     	printf("%d: %d\n", q, cconfig[q]);
     }   
+    printout("-----------------------------");
+    printout("Memory Configuration");
+    printout("-----------------------------");
+    printout(" ");
+    sprintf(printbuffer,"Dcache size: %d, ways: %d, block size: %d",cconfig[1],cconfig[2],cconfig[0]);
+    printout(printbuffer);
+    sprintf(printbuffer,"Icache size: %d, ways: %d, block size: %d",cconfig[1],cconfig[2],cconfig[0]);
+    printout(printbuffer);
+    sprintf(printbuffer,"L2-cache size: %d, ways: %d, block size: %d",cconfig[6],cconfig[7],cconfig[5]);
+    printout(printbuffer);
+    sprintf(printbuffer,"Memory ready time: %d, chunksize: %d, chunktime: %d",cconfig[14],cconfig[15],cconfig[14]);
+    printout(printbuffer);
+    
 
 	fclose(cc);
 
@@ -228,6 +257,10 @@ int readConfig(char *cache, char *mem) {
 }
 
 int computeCost(unsigned int cache[],unsigned int * memory) {
+    printout(" ");
+    printout("-----------------------------");
+    printout("Memory Cost Calculations:");
+    printout("-----------------------------");
     int cost = 0;
     int l1assoc = 0;
     int l1size = 0;
@@ -241,18 +274,34 @@ int computeCost(unsigned int cache[],unsigned int * memory) {
     l1size = (cache[1]/1024)/4; //Number of sets of 4KB
     l1assoc = cache[2];
     printf("L1 Cache Size(Multiples of 4KB): %d\n",l1size);
+    sprintf(printbuffer,"L1 Cache Size(Multiples of 4KB): %d\n",l1size);
+    printout(printbuffer);
+
     printf("L1 Cache Associativity: %d\n",l1assoc);
+    sprintf(printbuffer,"L1 Cache Associativity: %d\n",l1assoc);
+    printout(printbuffer);
 
     l2size = (cache[6]/1024)/16; //Number of set of 16KB
     l2assoc = cache[7];
+
     printf("L2 Cache Size(Multiples of 16KB): %d\n",l2size);
+    sprintf(printbuffer,"L2 Cache Size(Multiples of 16KB): %d\n",l2size);
+    printout(printbuffer);
+
     printf("L2 Cache Associativity: %d\n",l2assoc);
+    sprintf(printbuffer,"L2 Cache Associativity: %d\n",l2assoc);
+    printout(printbuffer);
 
-    mem_ready = 50/ memory[1];
+
+    mem_ready = 50/ cache[13];
     printf("Memory Latency Increased by factor of %d.\n",mem_ready);
+    sprintf(printbuffer,"Memory Latency Increased by factor of %d.\n",mem_ready);
+    printout(printbuffer);
 
-    mem_chunksize = memory[3] / 8;
+    mem_chunksize = cache[15] / 8;
     printf("Memory Chunksize multiples of 8 Bytes: %d.\n",mem_chunksize);
+    sprintf(printbuffer,"Memory Chunksize multiples of 8 Bytes: %d.\n",mem_chunksize);
+    printout(printbuffer);
 
     //Full cost calculation.
 
@@ -278,6 +327,8 @@ int computeCost(unsigned int cache[],unsigned int * memory) {
     cost += (25*mem_chunksize);
 
     printf("Total Cost of Memory System: %d.\n",cost);
+    sprintf(printbuffer,"Total Cost of Memory System: %d.\n",cost);
+    printout(printbuffer);
 
 
     return cost;

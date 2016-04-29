@@ -1,0 +1,568 @@
+-----------------------------
+tr1-test.txt
+-----------------------------
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+-----------------------------
+tr1-test.txt
+-----------------------------
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+-----------------------------
+tr1-test.txt
+-----------------------------
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+-----------------------------
+tr1-test.txt
+-----------------------------
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Latency Increased by factor of 1.
+
+-----------------------------
+tr1-test.txt
+-----------------------------
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+-----------------------------
+tr1-test.txt
+-----------------------------
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+tr1-test.txt
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+tr1-test.txt
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size = 32768, ways = 4, block size = 64
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size = 32768, ways = 4, block size = 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:        0  [0.000000]
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:        0  [0.000000]
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:        4  [0.400000]
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:        4  [0.400000]
+Reads:        0  [0.000000]
+Instructions:        6  [0.600000]
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:          4  [0.400000]
+Reads:           0  [0.000000]
+Instructions:    6  [0.600000]
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:          4  [0.40]
+Reads:           0  [0.00]
+Instructions:    6  [0.60]
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:          4  [0.400]
+Reads:           0  [0.000]
+Instructions:    6  [0.600]
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:          4  [0.400]
+Reads:           0  [0.000]
+Instructions:    6  [0.600]
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:          4  [0.400]
+Reads:           0  [0.000]
+Instructions:    6  [0.600]
+Total:           10 
+-----------------------------
+8
+
+-----------------------------
+-----------------------------
+Memory Configuration
+-----------------------------
+ 
+Dcache size: 8192, ways: 1, block size: 32
+Icache size: 8192, ways: 1, block size: 32
+L2-cache size: 32768, ways: 4, block size: 64
+Memory ready time: 15, chunksize: 8, chunktime: 15
+ 
+-----------------------------
+Memory Cost Calculations:
+-----------------------------
+L1 Cache Size(Multiples of 4KB): 2
+
+L1 Cache Associativity: 1
+
+L2 Cache Size(Multiples of 16KB): 2
+
+L2 Cache Associativity: 4
+
+Memory Latency Increased by factor of 1.
+
+Memory Chunksize multiples of 8 Bytes: 1.
+
+Total Cost of Memory System: 575.
+
+-----------------------------
+Instruction Statistics
+-----------------------------
+Number of Reference Types: [Percentage]
+Writes:          4  [0.400]
+Reads:           0  [0.000]
+Instructions:    6  [0.600]
+-----------------------------
+Total:           10 

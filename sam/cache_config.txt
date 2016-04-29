@@ -1,23 +1,23 @@
 L1
-L1_block_size:32
-L1_cache_size:4096
-L1_assoc:1
-L1_hit_time:1
-L1_miss_time:1
+0L1_block_size:32
+1L1_cache_size:8192
+2L1_assoc:1
+3L1_hit_time:1
+4L1_miss_time:1
 
 L2
-L2_block_size:64
-L2_cache_size:32768
-L2_assoc:4
-L2_hit_time:8
-L2_miss_time:10
-L2_transfer_time:10
-L2_bus_width:16
+5L2_block_size:64
+6L2_cache_size:32768
+7L2_assoc:4
+8L2_hit_time:8
+9L2_miss_time:10
+10L2_transfer_time:10
+11L2_bus_width:16
 
 Memory Config
-mem_sendaddr:10
-mem_ready:50
-mem_chunktime:15
-mem_chunksize:8
+12mem_sendaddr:10
+13mem_ready:50
+14mem_chunktime:15
+15mem_chunksize:8
 
 OutFile:tr1-test.txt
