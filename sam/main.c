@@ -2,56 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+
+#include "main.h"
 // #include <cstdlib.h>
-
-#define BSIZE 100
-
-unsigned int cconfig[17];
-unsigned int mconfig[4];
-
-char op;
-unsigned long long int address;
-unsigned int bytesize;
-
-
-int l1blocks = 0;
-int l2blocks = 0;
-int addrbits = 0;
-
-char printbuffer[50];
-
-// ***** Structure Declaration *****
-
-typedef struct c_entry{
-    uint32_t index;
-    uint8_t valid;
-    uint8_t tag;
-    long long int data;
-    uint8_t dirty;
-} c_entry;
-
-typedef struct {
-    char op;
-    unsigned long long int address;
-    unsigned int bytesize;
-} ref;
-
-ref inbuffer[BSIZE]; //Buffer to hold cache trace entries.
-
-// *****  END Structure Declaration *****
-// *****  L1, L2, And LRU Cache Pointers
-c_entry * l1cache;
-c_entry * l2cache;
-
-void usage();
-int readConfig(char *cc, char *mc);
-int computeCost(unsigned int * cache,unsigned int * memory);
-int setupL1();
-int setupL2();
-ref bundleRef(char op, unsigned long long int address, unsigned int bytesize);
-int fillBuffer();
-int processBuffer(int size);
-int printout(const char * outstring);
 
 
 int main(int argc, char ** argv) {
@@ -71,107 +24,33 @@ int main(int argc, char ** argv) {
 
     computeCost(cconfig,mconfig);
 
-    setupL1();
+    setupL1Dcache();
+    setupL1Icache();
 
-    int count = fillBuffer();
-    int processed = processBuffer(count);
+    int count = startSim();
 
-    printf("Read in %d elements from the stream.\n",count);
+    // for(int i = 0; i < count; i++) {
+    //     printf("Data!:\n");
+    //     printf("Op: %c, address: %Lx, bytesize: %d\n",inbuffer[i].op, inbuffer[i].address, inbuffer[i].bytesize);
+    // }
 
-    for(int i = 0; i < count; i++) {
-        printf("Data!:\n");
-        printf("Op: %c, address: %Lx, bytesize: %d\n",inbuffer[i].op, inbuffer[i].address, inbuffer[i].bytesize);
-    }
+    printL1('I');
+    printL1('D');
 
+    printf("FINISHED...\n");
 
-
-    // int chars = writeOutputFile("testing 123");
-
-
-    // printf("FINISHED...\n");
+    free(l1Icache);
+    free(l1Dcache);
 	return 0;
 }
 
-int printout(const char * outstring) {
-    FILE *out = fopen("printout.txt","a+");
-    int chars = fprintf(out, "%s\n",outstring);
-    fclose(out);   
-
-    return chars;
- }
-
-int processBuffer(int size) {
-    int processed = 0;
-    int item;
-    int read = 0;
-    int write = 0;
-    int inst = 0;
-
-    int blockaddr = 0;
-    int tag = 0;
-
-    int blockmask = 0;
-
-    for(int i = 0; i < addrbits; i++) {
-        blockmask <<= 1;
-        blockmask++;
-    }
-
-    printf("The blockmask! %#15x",blockmask);
-
-
-
-    //Count the number of instructions of each type
-    for(int i = 0; i < size; i++) {
-        blockaddr = (inbuffer[i].address & blockmask) % l1blocks;
-        tag = (inbuffer[i].address & (!blockmask) );  
-
-        if(inbuffer[i].op == 'R')
-        {
-            printf("Read Memory!\n");
-            read++;
-        }
-        if(inbuffer[i].op == 'W')
-        {
-            printf("Write Memory!\n");
-            write++;
-        }
-        if(inbuffer[i].op == 'I')
-        {
-            printf("Read Instruction!\n");
-            inst++;
-        }
-        printf("Block address for trace %d is: %#15x.\n",i,blockaddr);
-        printf("Tag for trace %d is: %#15x.\n",i,tag);
-
-
-    }
-    int total = read + write + inst;
-    printf("Reads: %d, Writes: %d, Instructions: %d.\n",read,write,inst);
-    printout("-----------------------------");
-    printout("Instruction Statistics");
-    printout("-----------------------------");
-    printout("Number of Reference Types: [Percentage]");
-    sprintf(printbuffer,"Writes:          %d  [%.3f]",write,(float)write/total);
-    printout(printbuffer);
-    sprintf(printbuffer,"Reads:           %d  [%.3f]",read,(float)read/total);
-    printout(printbuffer);
-    sprintf(printbuffer,"Instructions:    %d  [%.3f]",inst,(float)inst/total);
-    printout(printbuffer);
-    printout("-----------------------------");
-    sprintf(printbuffer,"Total:           %d ",total);
-    printout(printbuffer);
-
-    return processed;
-}
-
-int fillBuffer() {
-        int fill = 0;
+int startSim() {
+    ref entry;
     while(scanf("%c %Lx %d\n",&op,&address,&bytesize)==3) {
-        inbuffer[fill] = bundleRef(op, address, bytesize);
-        fill++;
+        total++;
+        entry = bundleRef(op, address, bytesize);
     }
-    return fill;
+    return 0;
 }
 
 ref bundleRef(char op, unsigned long long int address, unsigned int bytesize) {
@@ -181,6 +60,141 @@ ref bundleRef(char op, unsigned long long int address, unsigned int bytesize) {
     newRef.bytesize = bytesize;
     return newRef;
 }
+
+int processRef(ref newref) {
+    static int firstrun = 1;
+
+    int hit = 0; //Status variable for if the current instruction is a hit or not.
+
+    if(firstrun) //Function to set up the masks, but not make it do it every time. Hopefully speed improvement.
+    {
+        firstrun = 0;
+        for(int i = 0; i < addrbits; i++) {
+            blockmask <<= 1;
+            blockmask++;
+        }
+    }
+
+
+    uint32_t blockaddr = 0;
+    uint32_t tag = 0;
+
+    int iod = -1; //iod = instruction or data
+
+
+    printf("The blockmask! %#15x\n",blockmask);
+
+
+
+    //Count the number of instructions of each type
+        blockaddr = (newref.address & blockmask) % l1blocks;
+        printf("This is the address!!! %Lx \n",newref.address);
+
+        tag = ( newref.address & (~blockmask) ) >> (32-addrbits);  
+
+        if(newref.op == 'R')
+        {
+            printf("Read Memory!\n");
+            tread++;
+            iod = 1;
+        }
+        if(newref.op == 'W')
+        {
+            printf("Write Memory!\n");
+            twrite++;
+            iod = 1;
+        }
+        if(newref.op == 'I')
+        {
+            printf("Read Instruction!\n");
+            tinst++;
+            iod = 0;
+        }
+        printf("Block address for trace %d is: %#15x.\n",total,blockaddr);
+        printf("Tag for trace %d is: %#15x.\n",total,tag);
+
+
+        //Check if the instruction is in the L1 cache:
+        //Map the block to the array
+        c_entry * currentl1;
+        if(iod) currentl1 = l1Dcache;
+        else currentl1 = l1Icache;
+        //Case check if item is currently in cache.
+        for(int i = 0; i< l1assoc; i++) {
+            if(currentl1[(blockaddr*l1assoc+i)].valid 
+                && currentl1[(blockaddr*l1assoc+i)].tag == tag) { //Check to see if any one of the available slots are not valid
+                printf("Cache hit!!\n");
+                hit = 1;
+                break;
+            }
+        }
+        if(!hit) { //cache miss, deal with it
+            missHandlerL1(currentl1,tag,blockaddr);
+        }
+
+        return hit;
+
+    }
+
+
+    //MOVE THIS
+    // printf("Reads: %d, Writes: %d, Instructions: %d.\n",read,write,inst);
+    // printout("-----------------------------");
+    // printout("Instruction Statistics");
+    // printout("-----------------------------");
+    // printout("Number of Reference Types: [Percentage]");
+    // sprintf(printbuffer,"Writes:          %d  [%.3f]",write,(float)write/total);
+    // printout(printbuffer);
+    // sprintf(printbuffer,"Reads:           %d  [%.3f]",read,(float)read/total);
+    // printout(printbuffer);
+    // sprintf(printbuffer,"Instructions:    %d  [%.3f]",inst,(float)inst/total);
+    // printout(printbuffer);
+    // printout("-----------------------------");
+    // sprintf(printbuffer,"Total:           %d ",total);
+    // printout(printbuffer);
+
+
+
+void missHandlerL1(c_entry * cache, uint32_t tag, uint32_t blockaddr) {
+    //LRU Setup
+    for(int i = 0; i< l1assoc; i++)  {
+        if(cache[(blockaddr*l1assoc+i)].valid)
+            cache[(blockaddr*l1assoc+i)].lru++; //Increment LRU variable so oldest one has highest value 
+    }
+    //Check for available slots
+    //Case there is a slot available
+    for(int i = 0; i< l1assoc; i++) {
+        if(!cache[(blockaddr*l1assoc+i)].valid) { //Check to see if any one of the available slots are not valid
+            cache[(blockaddr*l1assoc+i)].valid = 1;
+            cache[(blockaddr*l1assoc+i)].tag = tag;
+            cache[(blockaddr*l1assoc+i)].lru = 0;
+            printf("Available Slot to address miss!!\n");
+            return;
+        }
+    }  
+    //Case evict oldest cache entry
+    int oldlru = 0;
+    int oldlruindex = 0;
+    //Determine oldest element
+    for(int i = 0; i< l1assoc; i++) {
+        if(cache[(blockaddr*l1assoc+i)].valid = 1) {
+            if(oldlru < cache[(blockaddr*l1assoc+i)].lru) {
+                oldlruindex = i;
+                oldlru = cache[(blockaddr*l1assoc+i)].lru;
+            }
+        }
+    }
+    //Push the older entry in an 8-entry LRU stack
+    printf("Evicted entry from cache!\n");
+    //Write entry into old 
+    cache[(blockaddr*l1assoc+oldlruindex)].tag = tag; //Update cache entry
+    return;
+
+
+}
+
+
+
 
 
 
@@ -255,6 +269,91 @@ int readConfig(char *cache, char *mem) {
 	return 0;
 
 }
+
+
+
+int setupL1Dcache() {
+    l1blocks = cconfig[1]/cconfig[0]; //cache size / block size
+    l1assoc = cconfig[2];
+    l1blocks /= l1assoc; //l1blocks = l1block/associativity
+    l1Dcache = malloc(sizeof(c_entry)*l1blocks*l1assoc);
+    if(l1Icache) printf("Successfully allocated memory!\n");
+
+    int bits = 0;
+    while((cconfig[1] >> bits) != 1) bits++; //Determine the number of bits to use for block address
+    addrbits = bits;
+
+
+    printf("The number of bits needed for the block address is: %d.\n",bits);
+
+
+
+    for(int j = 0; j < ((l1blocks*l1assoc)-1); j++) {
+        l1Dcache[j].valid = 0;
+        l1Dcache[j].tag = 0;
+        l1Dcache[j].dirty = 0;
+    }
+    return 0;
+}
+
+int setupL1Icache() {
+    l1blocks = cconfig[1]/cconfig[0]; //cache size / block size
+    l1assoc = cconfig[2];
+    l1blocks /= l1assoc; //l1blocks = l1block/associativity
+    l1Icache = malloc(sizeof(c_entry)*l1blocks*l1assoc);
+    if(l1Icache) printf("Successfully allocated memory!\n");
+
+    int bits = 0;
+    while((cconfig[1] >> bits) != 1) bits++; //Determine the number of bits to use for block address
+    addrbits = bits;
+
+
+    printf("The number of bits needed for the block address is: %d.\n",bits);
+
+
+
+    for(int j = 0; j < (l1blocks*l1assoc); j++) {
+        l1Icache[j].valid = 0;
+        l1Icache[j].tag = 0;
+        l1Icache[j].dirty = 0;
+        printf("Loop number %d\n",j);
+    }
+    return 0;
+}
+
+void printL1(char t) {
+    int valid = 0;
+    if(t=='I') {
+        printf("L1 Instruction Cache:\n");
+        for(int k = 0; k < l1assoc; k++) {
+            printf("Set %d ----------------------\n",k);
+            for(int i = 0; i < l1blocks; i++) {
+                if(l1Icache[(i*l1assoc)+k].valid) valid++;
+                printf("Block Addr: %x, Tag: %x, Valid: %x.\n",i,l1Icache[(i*l1assoc)+k].tag,l1Icache[(i*l1assoc)+k].valid);
+            }
+        }
+    }
+    if(t=='D') {
+        printf("L1 Data Cache:\n");
+        for(int k = 0; k < l1assoc; k++) {
+            printf("Set %d ----------------------\n",k);
+            for(int i = 0; i < l1blocks; i++) {
+                if(l1Dcache[(i*l1assoc)+k].valid) valid++;
+                printf("Block Addr: %x, Tag: %x, Valid: %x.\n",i,l1Dcache[(i*l1assoc)+k].tag,l1Dcache[(i*l1assoc)+k].valid);
+            }
+        }
+    }
+    printf("Number of valid entries: %d.\n",valid);
+}
+
+
+int printout(const char * outstring) {
+    FILE *out = fopen("printout.txt","a+");
+    int chars = fprintf(out, "%s\n",outstring);
+    fclose(out);   
+
+    return chars;
+ }
 
 int computeCost(unsigned int cache[],unsigned int * memory) {
     printout(" ");
@@ -332,31 +431,4 @@ int computeCost(unsigned int cache[],unsigned int * memory) {
 
 
     return cost;
-}
-
-int setupL1() {
-    l1blocks = cconfig[1]/cconfig[0]; //cache size / block size
-    int l1assoc = cconfig[2];
-    l1blocks /= l1assoc; //l1blocks = l1block/associativity
-    l1cache = malloc(sizeof(c_entry)*l1blocks*l1assoc);
-    if(l1cache) printf("Successfully allocated memory!\n");
-
-    int bits = 0;
-    while((cconfig[1] >> bits) != 1) bits++; //Determine the number of bits to use for block address
-    addrbits = bits;
-
-
-    printf("The number of bits needed for the block address is: %d.\n",bits);
-
-
-
-    for(int j = 0; j < (l1blocks*l1assoc); j++) {
-        // l1cache[j] = (c_entry) malloc(sizeof(c_entry));
-        l1cache[j].index = 0;
-        l1cache[j].valid = 0;
-        l1cache[j].tag = 0;
-        l1cache[j].data = 0;
-        l1cache[j].dirty = 0;
-    }
-    return 0;
 }

@@ -1,5 +1,0 @@
-Memory Config
-mem_sendaddr:10
-mem_ready:50
-mem_chunktime:15
-mem_chunksize:8
